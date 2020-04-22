@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- inspired by "Times Tables, Mandelbrot and the Heart of Mathematics" by Mathologer, https://www.youtube.com/watch?v=qhbuKbxJsk8 -->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title></title>
+  <style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    /* Scale canvas with resize attribute to full size */
+    canvas[resize] {
+        width: 100%;
+        height: 100%;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.2/paper-full.js"></script>
+  <script type="text/javascript">
+    window.onload = function() {
+    
+      const canvas = document.getElementById('myCanvas');
+      canvas.width=window.innerWidth;
+      canvas.height=window.innerHeight;
+      paper.setup(canvas);
+
+      const center = new paper.Point(canvas.width / 2, canvas.height / 2);
+      const circle = new paper.Shape.Circle(center, 200);
+      circle.strokeColor = 'black';
+
+      const numPoints = 200;
+
+      let times = 1;
+      let maxTimes = 99;
+
+      for (let i = 0; i < numPoints; i++) {
+        let angle = i / numPoints * 2 * Math.PI;
+        let p = new paper.Point(Math.cos(angle) * circle.radius, Math.sin(angle) * circle.radius);
+        p = p.add(circle.position);
+        
+        let dot = new paper.Shape.Circle(p, 2);
+        dot.strokeColor = 'red';
+      }
+      
+      let lines = [];
+      for (let i = 0; i < numPoints; i++) {
+        let p0 = new paper.Point(0,0);
+        let p1 = new paper.Point(1,1);
+        let line = new paper.Path.Line(p0, p1);
+        line.strokeColor = 'grey'
+        
+        lines[i] = line;
+      }
+
+      paper.view.onFrame = () => {
+        if (times <= maxTimes) {
+          for (let i = 0; i < numPoints; i++) {
+            let startAngle = i / numPoints * 2 * Math.PI;
+            let p0 = new paper.Point(Math.cos(startAngle) * circle.radius, Math.sin(startAngle) * circle.radius);
+            p0 = p0.add(circle.position);
+        
+            let endAngle = startAngle * times;
+            let p1 = new paper.Point(Math.cos(endAngle) * circle.radius, Math.sin(endAngle) * circle.radius);
+            p1 = p1.add(circle.position);
+
+            let line = lines[i];
+            line.segments[0].point = p0;
+            line.segments[1].point = p1;
+          }
+        
+          times += 0.01;
+        }
+      }
+
+    }
+  </script>
+  
+</head>
+<body>
+  <canvas id='myCanvas' resize hidpi="off"></canvas>
+</body>
+</html>
